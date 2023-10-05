@@ -1,3 +1,5 @@
+import rasterdata.RasterBI;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,7 +25,7 @@ public class Canvas {
 
     private JFrame frame;
     private JPanel panel;
-    private BufferedImage img;
+    private RasterBI img;
     int up = 0;
     int down = 0;
     int left = 0;
@@ -40,7 +42,7 @@ public class Canvas {
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        img = new RasterBI(width, height);
 
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
@@ -63,7 +65,7 @@ public class Canvas {
             @Override
             public void keyPressed(KeyEvent e){
                 if(e.getKeyCode() == KeyEvent.VK_UP) {
-                    clear();
+                    img.clear(0x2f2f2f);
                     up += 1;
                     drawCross(up, down, left, right);
                     trail += 1;
@@ -72,7 +74,7 @@ public class Canvas {
                     panel.repaint();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    clear();
+                    img.clear(0x2f2f2f);
                     down += 1;
                     drawCross(up, down, left, right);
                     trail += 1;
@@ -81,7 +83,7 @@ public class Canvas {
                     panel.repaint();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    clear();
+                    img.clear(0x2f2f2f);
                     left += 1;
                     drawCross(up, down, left, right);
                     trail += 1;
@@ -90,7 +92,7 @@ public class Canvas {
                     panel.repaint();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    clear();
+                    img.clear(0x2f2f2f);
                     right += 1;
                     drawCross(up, down, left, right);
                     trail += 1;
@@ -105,7 +107,7 @@ public class Canvas {
         panel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
-                img.setRGB(mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
+                img.setColor(mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
                 panel.repaint();
             }
 
@@ -133,7 +135,7 @@ public class Canvas {
         panel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
-                img.setRGB(mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
+                img.setColor(mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
                 panel.repaint();
             }
 
@@ -145,52 +147,46 @@ public class Canvas {
     }
 
     public void drawCross(int up, int down, int left, int right){
-        img.setRGB(img.getWidth()/2 - left + right,img.getHeight()/2 + down - up, 0xffff00);
-        img.setRGB(img.getWidth()/2 - 1 - left + right,img.getHeight()/2 + down - up, 0xffff00);
-        img.setRGB(img.getWidth()/2 + 1 - left + right,img.getHeight()/2 + down - up, 0xffff00);
-        img.setRGB(img.getWidth()/2 - left + right,(img.getHeight()/2 - 1) + down - up, 0xffff00);
-        img.setRGB(img.getWidth()/2 - left + right,(img.getHeight()/2 + 1) + down - up, 0xffff00);
+        img.setColor(img.getWidth()/2 - left + right,img.getHeight()/2 + down - up, 0xffff00);
+        img.setColor(img.getWidth()/2 - 1 - left + right,img.getHeight()/2 + down - up, 0xffff00);
+        img.setColor(img.getWidth()/2 + 1 - left + right,img.getHeight()/2 + down - up, 0xffff00);
+        img.setColor(img.getWidth()/2 - left + right,(img.getHeight()/2 - 1) + down - up, 0xffff00);
+        img.setColor(img.getWidth()/2 - left + right,(img.getHeight()/2 + 1) + down - up, 0xffff00);
     }
 
     public void drawTrail(int trail, int trailRow, int trailCol){
         for (int i = 0; i < trail; i++) {
             if (trailCol<0){
                 for (int j = 0; j < -trailCol; j++) {
-                    img.setRGB(img.getWidth()/2,img.getHeight()/2 - j, 0xffff00);
+                    img.setColor(img.getWidth()/2,img.getHeight()/2 - j, 0xffff00);
                 }
             }
             if (trailCol>0){
                 for (int j = 0; j < trailCol; j++) {
-                    img.setRGB(img.getWidth()/2,img.getHeight()/2 + j, 0xffff00);
+                    img.setColor(img.getWidth()/2,img.getHeight()/2 + j, 0xffff00);
                 }
             }
             if (trailRow<0){
                 for (int j = 0; j < -trailRow; j++) {
-                    img.setRGB(img.getWidth()/2 - j,img.getHeight()/2 + trailCol, 0xffff00);
+                    img.setColor(img.getWidth()/2 - j,img.getHeight()/2 + trailCol, 0xffff00);
                 }
             }
             if (trailRow>0){
                 for (int j = 0; j < trailRow; j++) {
-                    img.setRGB(img.getWidth()/2 + j,img.getHeight()/2 + trailCol, 0xffff00);
+                    img.setColor(img.getWidth()/2 + j,img.getHeight()/2 + trailCol, 0xffff00);
                 }
             }
 
         }
     }
 
-    public void clear() {
-        Graphics gr = img.getGraphics();
-        gr.setColor(new Color(0x2f2f2f));
-        gr.fillRect(0, 0, img.getWidth(), img.getHeight());
-    }
-
     public void present(Graphics graphics) {
-        graphics.drawImage(img, 0, 0, null);
+        img.present(graphics);
     }
 
     public void draw() {
-        clear();
-        img.setRGB(img.getWidth()/2,img.getHeight()/2, 0xffff00);
+        img.clear(0x2f2f2f);
+        img.setColor(img.getWidth()/2,img.getHeight()/2, 0xffff00);
     }
 
     public void start() {

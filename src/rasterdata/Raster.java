@@ -8,5 +8,6 @@ public interface Raster {
     int getHeight();
     boolean setColor(int c, int r, int color);
     Optional<Integer> getColor(int c, int r);
+    void clear(int background);
 
 }
