@@ -1,4 +1,5 @@
 import rasterdata.RasterBI;
+import rasterops.LinerTrivial;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,6 +27,7 @@ public class Canvas {
     private JFrame frame;
     private JPanel panel;
     private RasterBI img;
+    LinerTrivial linerTrivial = new LinerTrivial();
     int up = 0;
     int down = 0;
     int left = 0;
@@ -33,6 +35,10 @@ public class Canvas {
     int trail = 0;
     int trailCol = 0;
     int trailRow = 0;
+    double x1;
+    double y1;
+    double x2;
+    double y2;
 
     public Canvas(int width, int height) {
         frame = new JFrame();
@@ -103,22 +109,24 @@ public class Canvas {
             }
         });
 
-
         panel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
-                img.setColor(mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
-                panel.repaint();
+
             }
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-
+                x1 = mouseEvent.getX();
+                y1 = mouseEvent.getY();
             }
 
             @Override
             public void mouseReleased(MouseEvent mouseEvent) {
-
+                x2 = mouseEvent.getX();
+                y2 = mouseEvent.getY();
+                linerTrivial.drawLine(img, x1, y1, x2, y2, 0xff00ff);
+                panel.repaint();
             }
 
             @Override
@@ -132,18 +140,46 @@ public class Canvas {
             }
         });
 
-        panel.addMouseMotionListener(new MouseMotionListener() {
-            @Override
-            public void mouseDragged(MouseEvent mouseEvent) {
-                img.setColor(mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
-                panel.repaint();
-            }
+//        panel.addMouseListener(new MouseListener() {
+//            @Override
+//            public void mouseClicked(MouseEvent mouseEvent) {
+//                img.setColor(mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
+//                panel.repaint();
+//            }
+//
+//            @Override
+//            public void mousePressed(MouseEvent mouseEvent) {
+//
+//            }
+//
+//            @Override
+//            public void mouseReleased(MouseEvent mouseEvent) {
+//
+//            }
+//
+//            @Override
+//            public void mouseEntered(MouseEvent mouseEvent) {
+//
+//            }
+//
+//            @Override
+//            public void mouseExited(MouseEvent mouseEvent) {
+//
+//            }
+//        });
 
-            @Override
-            public void mouseMoved(MouseEvent mouseEvent) {
-
-            }
-        });
+//        panel.addMouseMotionListener(new MouseMotionListener() {
+//            @Override
+//            public void mouseDragged(MouseEvent mouseEvent) {
+//                img.setColor(mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
+//                panel.repaint();
+//            }
+//
+//            @Override
+//            public void mouseMoved(MouseEvent mouseEvent) {
+//
+//            }
+//        });
     }
 
     public void drawCross(int up, int down, int left, int right){

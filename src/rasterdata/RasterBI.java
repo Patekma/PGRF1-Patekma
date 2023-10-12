@@ -25,7 +25,7 @@ public class RasterBI implements Raster, Presentable{
     @Override
     public boolean setColor(int c, int r, int color) {
         if (c >= 0 && r >= 0 && c < img.getHeight()-1 && r < img.getWidth()-1){
-            img.setRGB(r, c, color);
+            img.setRGB(c, r, color);
             return true;
         }
         return false;
