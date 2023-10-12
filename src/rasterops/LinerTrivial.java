@@ -8,6 +8,16 @@ import rasterdata.Raster;
 public class LinerTrivial implements Liner{
     @Override
     public void drawLine(Raster img, double x1, double y1, double x2, double y2, int color) {
+
+        if(x2<x1){
+            double temp = x1;
+            x1 = x2;
+            x2 = temp;
+
+            temp = y1;
+            y1 = y2;
+            y2 = temp;
+        }
         double k = (y2-y1) / (x2-x1);
         double q = y1 - k * x1;
         double y;
