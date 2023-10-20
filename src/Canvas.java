@@ -140,6 +140,20 @@ public class Canvas {
             }
         });
 
+        panel.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent mouseEvent) {
+                img.clear(0x2f2f2f);
+                linerTrivial.drawLine(img, x1, y1, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
+                panel.repaint();
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+
+            }
+        });
+
 //        panel.addMouseListener(new MouseListener() {
 //            @Override
 //            public void mouseClicked(MouseEvent mouseEvent) {
