@@ -60,7 +60,7 @@ public class LinerDotted implements Liner{
                 }
                 if (length <= 1) {
                     int y = (int) Math.round(k * x + q);
-                    img.setColor((int) x, (int) y, color);
+                    img.setColor((int) x, y, color);
                     length++;
                 } else {
                     space++;

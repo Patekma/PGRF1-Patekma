@@ -37,7 +37,7 @@ public class LinerTrivial implements Liner{
         else if(Math.abs(k) <= 1) {
             for (double x = x1; x <= x2; x++) {
                 int y = (int) Math.round(k * x + q);
-                img.setColor((int) x, (int) y, color);
+                img.setColor((int) x, y, color);
             }
         }
         else if(Math.abs(k) > 1)

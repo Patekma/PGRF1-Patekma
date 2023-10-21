@@ -68,7 +68,7 @@ public class LinerDashed implements Liner{
                 }
                 if (length <= dashLength) {
                 int y = (int) Math.round(k * x + q);
-                img.setColor((int) x, (int) y, color);
+                img.setColor((int) x, y, color);
                     length++;
                 } else {
                     space++;
