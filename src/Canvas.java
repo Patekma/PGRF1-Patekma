@@ -1,4 +1,6 @@
 import rasterdata.RasterBI;
+import rasterops.LinerDashed;
+import rasterops.LinerDotted;
 import rasterops.LinerTrivial;
 
 import java.awt.BorderLayout;
@@ -28,6 +30,8 @@ public class Canvas {
     private JPanel panel;
     private RasterBI img;
     LinerTrivial linerTrivial = new LinerTrivial();
+    LinerDotted linerDotted = new LinerDotted(5);
+    LinerDashed linerDashed = new LinerDashed(10,10);
     int up = 0;
     int down = 0;
     int left = 0;
@@ -125,7 +129,7 @@ public class Canvas {
             public void mouseReleased(MouseEvent mouseEvent) {
                 x2 = mouseEvent.getX();
                 y2 = mouseEvent.getY();
-                linerTrivial.drawLine(img, x1, y1, x2, y2, 0xff00ff);
+                linerDotted.drawLine(img, x1, y1, x2, y2, 0xff00ff);
                 panel.repaint();
             }
 
@@ -144,7 +148,7 @@ public class Canvas {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
                 img.clear(0x2f2f2f);
-                linerTrivial.drawLine(img, x1, y1, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
+                linerDotted.drawLine(img, x1, y1, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
                 panel.repaint();
             }
 
@@ -236,7 +240,7 @@ public class Canvas {
 
     public void draw() {
         img.clear(0x2f2f2f);
-        img.setColor(img.getWidth()/2,img.getHeight()/2, 0xffff00);
+        img.setColor(img.getWidth(),img.getHeight(), 0xffff00);
     }
 
     public void start() {
