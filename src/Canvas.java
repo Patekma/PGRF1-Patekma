@@ -77,6 +77,7 @@ public class Canvas {
             @Override
             public void keyPressed(KeyEvent e){
                 if(e.getKeyCode() == KeyEvent.VK_C) {
+                    polygon.clearPoints();
                     clear();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_L) {
@@ -114,17 +115,43 @@ public class Canvas {
 
             @Override
             public void mouseReleased(MouseEvent mouseEvent) {
+
                 if (lineMode){
                     x2 = mouseEvent.getX();
                     y2 = mouseEvent.getY();
                     linerDotted.drawLine(img, x1, y1, x2, y2, 0xff00ff);
                     panel.repaint();
                 }
+
                 if (polygonMode){
-                    clear();
-                    polygon.addPoint(new Point(mouseEvent.getX(), mouseEvent.getY()));
-                    if (polygon.getCount() > 1) {
-                        polygoner.rasterizePolygon(img, polygon, 0xffffff, mouseEvent);
+                    if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+                        clear();
+                        polygon.addPoint(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                        if (polygon.getCount() > 1) {
+                            polygoner.rasterizePolygon(img, polygon, 0xffffff, mouseEvent);
+                            panel.repaint();
+                        }
+                    }
+                    if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                        Point tempPoint = new Point(0,0);
+                        double tempX;
+                        double tempY;
+                        int temp = 0;
+                        for (int i = 0; i < polygon.getCount(); i++) {
+                            tempX = polygon.getPoint(i).getX() - mouseEvent.getX();
+                            tempY = polygon.getPoint(i).getY() - mouseEvent.getY();
+                            if (tempX < 0 && tempX > tempPoint.getX() && tempY < 0 && tempY > tempPoint.getY()){
+                                tempPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+                                temp = i;
+                            } else if (tempX > 0 && tempX < tempPoint.getX() && tempY > 0 && tempY < tempPoint.getY()) {
+                                tempPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+                                temp = i;
+                            }
+                        }
+                        clear();
+                        polygon.getPoint(temp).setX(mouseEvent.getX());
+                        polygon.getPoint(temp).setY(mouseEvent.getY());
+                        polygoner.updatePolygon(img, polygon, 0xffffff);
                         panel.repaint();
                     }
                 }

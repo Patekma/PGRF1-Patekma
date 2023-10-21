@@ -2,10 +2,10 @@ package objectdata;
 
 public class Point {
 
-    public final double x;
-    public final double y;
+    public double x;
+    public double y;
 
-    public Point(final double x, final double y) {
+    public Point(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -16,5 +16,13 @@ public class Point {
 
     public double getY() {
         return y;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 }
