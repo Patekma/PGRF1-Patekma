@@ -51,10 +51,12 @@ public class LinerDashed implements Liner{
                     space = 0;
                 }
                 if (length <= dashLength) {
+                    //dokud není dosažena požadovaná délka, vykreslujeme čáru dál
                 double x = x1;
                 img.setColor((int) x, (int) y, color);
                     length++;
                 } else {
+                    //pokud je čára dlouhá podle požadavku, přidáme mezeru
                     space++;
                 }
 

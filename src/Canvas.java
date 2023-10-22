@@ -4,23 +4,14 @@ import rasterdata.RasterBI;
 import rasterops.*;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-
-/**
- * trida pro kresleni na platno: zobrazeni pixelu
- *
- * @author PGRF FIM UHK
- * @version 2020
- */
 
 public class Canvas {
 
@@ -48,7 +39,7 @@ public class Canvas {
         frame = new JFrame();
 
         frame.setLayout(new BorderLayout());
-        frame.setTitle("UHK FIM PGRF : " + this.getClass().getName());
+        frame.setTitle("UHK FIM PGRF : patekma1");
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -71,6 +62,14 @@ public class Canvas {
         frame.setVisible(true);
 
         panel.requestFocusInWindow();
+        /*
+            Klávesy pro ovládání
+            Polygon: K
+            Úsečka: L
+            Čárkovaná úsečka: J
+            Zarovnaná úsečka: SHIFT
+            Clear: C
+            */
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e){
@@ -97,10 +96,10 @@ public class Canvas {
                     dashedLineMode = !dashedLineMode;
                 }
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    clear();
                     alignMode = !alignMode;
                     polygonMode = false;
                     lineMode = false;
-                    clear();
                     panel.repaint();
                 }
             }
@@ -114,6 +113,7 @@ public class Canvas {
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                //Zadání prvního bodu u úseček
                 if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
                     if (lineMode) {
                         x1 = mouseEvent.getX();
@@ -128,7 +128,7 @@ public class Canvas {
 
             @Override
             public void mouseReleased(MouseEvent mouseEvent) {
-
+                //Potvrzení posledního bodu
                 if (lineMode){
                     if (dashedLineMode){
                         clear();
@@ -161,7 +161,6 @@ public class Canvas {
                         panel.repaint();
                     }
                 }
-
                 if (alignMode){
                     x2 = mouseEvent.getX();
                     y2 = mouseEvent.getY();
@@ -184,6 +183,7 @@ public class Canvas {
         panel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
+                //Tažení při zadávání posledního bodu
                     if (lineMode) {
                         clear();
                         linerDotted.drawLine(img, x1, y1, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);

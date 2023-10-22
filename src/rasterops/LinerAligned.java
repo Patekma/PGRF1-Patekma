@@ -10,19 +10,7 @@ public class LinerAligned implements Liner{
         double q = y1 - k * x1;
         double temp;
 
-        if(x2 < x1)
-        {
-            temp = x1;
-            x1 = x2;
-            x2 = temp;
-        }
 
-        if(y2 < y1)
-        {
-            temp = y1;
-            y1 = y2;
-            y2 = temp;
-        }
 
         if (k < 1 && k >= 0.5){
             k = 1;
@@ -37,6 +25,20 @@ public class LinerAligned implements Liner{
             k = -1;
         } else {
             x2 = x1;
+        }
+
+        if(x2 < x1)
+        {
+            temp = x1;
+            x1 = x2;
+            x2 = temp;
+        }
+
+        if(y2 < y1)
+        {
+            temp = y1;
+            y1 = y2;
+            y2 = temp;
         }
 
         if(x2 - x1 == 0)

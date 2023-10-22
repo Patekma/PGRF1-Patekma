@@ -24,6 +24,7 @@ public class RasterBI implements Raster, Presentable{
 
     @Override
     public boolean setColor(int c, int r, int color) {
+        //Řešení boundaries
         if (c > this.getWidth() - 1 || c < 0 || r > this.getHeight() - 1 || r < 0){
             return false;
         }else{
@@ -33,6 +34,7 @@ public class RasterBI implements Raster, Presentable{
     }
     @Override
     public Optional<Integer> getColor(int c, int r) {
+        //Řešení boundaries
         if (c > this.getWidth() - 1 || c < 0 || r > this.getHeight() - 1 || r < 0){
             return Optional.empty();
         }else{
