@@ -11,7 +11,7 @@ public class LinerAligned implements Liner{
         double temp;
 
 
-
+        //sklon se zakrouhluje podle toho k čemu je blíže
         if (k < 1 && k >= 0.5){
             k = 1;
         }
@@ -19,11 +19,13 @@ public class LinerAligned implements Liner{
             k = 0;
         }
         else if (k < 0 && k > -0.5){
+            //vodorovná
             k = 0;
         }
         else if (k > -1 && k <= -0.5){
             k = -1;
         } else {
+            //pokud je sklon jiný, úsečka se zarovná na svislou
             x2 = x1;
         }
 
