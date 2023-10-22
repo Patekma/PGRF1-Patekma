@@ -24,19 +24,20 @@ public class RasterBI implements Raster, Presentable{
 
     @Override
     public boolean setColor(int c, int r, int color) {
-        if (c >= 0 && r >= 0 && c < img.getHeight()-1 && r < img.getWidth()-1){
+        if (c > this.getWidth() - 1 || c < 0 || r > this.getHeight() - 1 || r < 0){
+            return false;
+        }else{
             img.setRGB(c, r, color);
             return true;
         }
-        return false;
     }
-
     @Override
     public Optional<Integer> getColor(int c, int r) {
-        if (c >= 0 && r >= 0 && c < img.getHeight()-1 && r < img.getWidth()-1){
+        if (c > this.getWidth() - 1 || c < 0 || r > this.getHeight() - 1 || r < 0){
+            return Optional.empty();
+        }else{
             return Optional.of(img.getRGB(r,c));
         }
-        return Optional.empty();
     }
 
     @Override

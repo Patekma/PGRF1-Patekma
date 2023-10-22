@@ -1,10 +1,7 @@
 import objectdata.Point;
 import objectdata.Polygon;
 import rasterdata.RasterBI;
-import rasterops.LinerDashed;
-import rasterops.LinerDotted;
-import rasterops.LinerTrivial;
-import rasterops.Polygoner;
+import rasterops.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -33,6 +30,7 @@ public class Canvas {
     LinerTrivial linerTrivial = new LinerTrivial();
     LinerDotted linerDotted = new LinerDotted(5);
     LinerDashed linerDashed = new LinerDashed(10,10);
+    LinerAligned linerAligned = new LinerAligned();
     Polygon polygon = new Polygon();
     Polygoner polygoner = new Polygoner(linerTrivial, linerDotted);
     double x1;
@@ -43,6 +41,7 @@ public class Canvas {
     boolean lineMode = true;
     boolean polygonMode = false;
     boolean dashedLineMode = false;
+    boolean alignMode = false;
 
 
     public Canvas(int width, int height) {
@@ -99,6 +98,13 @@ public class Canvas {
                     dashedLineMode = !dashedLineMode;
                     System.out.println("Dashed line: " + dashedLineMode);
                 }
+                if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    alignMode = !alignMode;
+                    polygonMode = false;
+                    lineMode = false;
+                    clear();
+                    panel.repaint();
+                }
             }
         });
 
@@ -112,6 +118,10 @@ public class Canvas {
             public void mousePressed(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
                     if (lineMode) {
+                        x1 = mouseEvent.getX();
+                        y1 = mouseEvent.getY();
+                    }
+                    if (alignMode) {
                         x1 = mouseEvent.getX();
                         y1 = mouseEvent.getY();
                     }
@@ -151,6 +161,13 @@ public class Canvas {
                         panel.repaint();
                     }
                 }
+
+                if (alignMode){
+                    x2 = mouseEvent.getX();
+                    y2 = mouseEvent.getY();
+                    linerAligned.drawLine(img, x1, y1, x2, y2, 0xff00ff);
+                    panel.repaint();
+                }
             }
 
             @Override
@@ -175,6 +192,11 @@ public class Canvas {
                     if (polygonMode && polygon.getCount() > 0) {
                         clear();
                         polygoner.rasterizePolygonDotted(img, polygon, 0xffffff, mouseEvent);
+                        panel.repaint();
+                    }
+                    if (alignMode){
+                        clear();
+                        linerAligned.drawLine(img, x1, y1, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
                         panel.repaint();
                     }
             }

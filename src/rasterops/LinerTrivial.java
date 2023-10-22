@@ -4,9 +4,6 @@ import objectdata.Line;
 import objectdata.Point;
 import rasterdata.Raster;
 
-//naive line algorithm
-//nekresli doleva, protoze predpokladam, ze x1 je vetsi nez x2
-
 public class LinerTrivial implements Liner{
     @Override
     public void drawLine(Raster img, double x1, double y1, double x2, double y2, int color) {
@@ -100,6 +97,7 @@ public class LinerTrivial implements Liner{
         }
 
     }
+    @Override
     public void drawLine(Raster img, Line line, int color) {
 
         double x1 = line.getP1().getX();
