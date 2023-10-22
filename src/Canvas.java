@@ -81,22 +81,20 @@ public class Canvas {
                 if(e.getKeyCode() == KeyEvent.VK_L) {
                     lineMode = !lineMode;
                     polygonMode = false;
-                    System.out.println("Line mode: " + lineMode);
-                    System.out.println("Polygon mode: " +polygonMode);
+                    alignMode = false;
                     clear();
                     panel.repaint();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_K) {
+                    polygon.clearPoints();
                     lineMode = false;
                     polygonMode = !polygonMode;
-                    System.out.println("Line mode: " + lineMode);
-                    System.out.println("Polygon mode: " + polygonMode);
+                    alignMode = false;
                     clear();
                     panel.repaint();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_J) {
                     dashedLineMode = !dashedLineMode;
-                    System.out.println("Dashed line: " + dashedLineMode);
                 }
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     alignMode = !alignMode;
@@ -133,11 +131,13 @@ public class Canvas {
 
                 if (lineMode){
                     if (dashedLineMode){
+                        clear();
                         x2 = mouseEvent.getX();
                         y2 = mouseEvent.getY();
                         linerDashed.drawLine(img, x1, y1, x2, y2, 0xff00ff);
                         panel.repaint();
                     }else {
+                        clear();
                         x2 = mouseEvent.getX();
                         y2 = mouseEvent.getY();
                         linerTrivial.drawLine(img, x1, y1, x2, y2, 0xff00ff);
@@ -220,8 +220,6 @@ public class Canvas {
     public void start() {
         draw();
         panel.repaint();
-        System.out.println("Line mode: " + lineMode);
-        System.out.println("Polygon mode: " + polygonMode);
     }
 
     public void clear(){
