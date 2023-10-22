@@ -44,6 +44,7 @@ public class Canvas {
 
     boolean lineMode = true;
     boolean polygonMode = false;
+    boolean dashedLineMode = false;
 
 
     public Canvas(int width, int height) {
@@ -96,6 +97,10 @@ public class Canvas {
                     clear();
                     panel.repaint();
                 }
+                if(e.getKeyCode() == KeyEvent.VK_J) {
+                    dashedLineMode = !dashedLineMode;
+                    System.out.println("Dashed line: " + dashedLineMode);
+                }
             }
         });
 
@@ -107,9 +112,11 @@ public class Canvas {
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                if (lineMode){
-                    x1 = mouseEvent.getX();
-                    y1 = mouseEvent.getY();
+                if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+                    if (lineMode) {
+                        x1 = mouseEvent.getX();
+                        y1 = mouseEvent.getY();
+                    }
                 }
             }
 
@@ -117,10 +124,17 @@ public class Canvas {
             public void mouseReleased(MouseEvent mouseEvent) {
 
                 if (lineMode){
-                    x2 = mouseEvent.getX();
-                    y2 = mouseEvent.getY();
-                    linerDotted.drawLine(img, x1, y1, x2, y2, 0xff00ff);
-                    panel.repaint();
+                    if (dashedLineMode){
+                        x2 = mouseEvent.getX();
+                        y2 = mouseEvent.getY();
+                        linerDashed.drawLine(img, x1, y1, x2, y2, 0xff00ff);
+                        panel.repaint();
+                    }else {
+                        x2 = mouseEvent.getX();
+                        y2 = mouseEvent.getY();
+                        linerTrivial.drawLine(img, x1, y1, x2, y2, 0xff00ff);
+                        panel.repaint();
+                    }
                 }
 
                 if (polygonMode){
@@ -133,29 +147,12 @@ public class Canvas {
                         }
                     }
                     if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
-                        Point tempPoint = new Point(0,0);
-                        double tempX;
-                        double tempY;
-                        int temp = 0;
-                        for (int i = 0; i < polygon.getCount(); i++) {
-                            tempX = polygon.getPoint(i).getX() - mouseEvent.getX();
-                            tempY = polygon.getPoint(i).getY() - mouseEvent.getY();
-                            if (tempX < 0 && tempX > tempPoint.getX() && tempY < 0 && tempY > tempPoint.getY()){
-                                tempPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-                                temp = i;
-                            } else if (tempX > 0 && tempX < tempPoint.getX() && tempY > 0 && tempY < tempPoint.getY()) {
-                                tempPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-                                temp = i;
-                            }
-                        }
                         clear();
-                        polygon.getPoint(temp).setX(mouseEvent.getX());
-                        polygon.getPoint(temp).setY(mouseEvent.getY());
-                        polygoner.updatePolygon(img, polygon, 0xffffff);
+                        polygoner.updatePolygon(polygon, mouseEvent);
+                        polygoner.rasterizePolygon(img, polygon, 0xffffff, mouseEvent);
                         panel.repaint();
                     }
                 }
-
             }
 
             @Override
@@ -172,16 +169,16 @@ public class Canvas {
         panel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
-                if (lineMode){
-                    clear();
-                    linerDotted.drawLine(img, x1, y1, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
-                    panel.repaint();
-                }
-                if (polygonMode && polygon.getCount() > 0){
-                    clear();
-                    polygoner.rasterizePolygonDotted(img, polygon, 0xffffff, mouseEvent);
-                    panel.repaint();
-                }
+                    if (lineMode) {
+                        clear();
+                        linerDotted.drawLine(img, x1, y1, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
+                        panel.repaint();
+                    }
+                    if (polygonMode && polygon.getCount() > 0) {
+                        clear();
+                        polygoner.rasterizePolygonDotted(img, polygon, 0xffffff, mouseEvent);
+                        panel.repaint();
+                    }
             }
 
             @Override
