@@ -34,7 +34,6 @@ public class Canvas {
     boolean dashedLineMode = false;
     boolean alignMode = false;
 
-
     public Canvas(int width, int height) {
         frame = new JFrame();
 
