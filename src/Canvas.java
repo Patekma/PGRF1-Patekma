@@ -25,8 +25,6 @@ import javax.swing.WindowConstants;
  * @version 2020
  */
 
-//TODO: udelat ten krizek (do vsech stran), ale aby byla videt trasa
-
 public class Canvas {
 
     private JFrame frame;
