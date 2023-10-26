@@ -2,6 +2,7 @@ import objectdata.Point;
 import objectdata.Polygon;
 import rasterdata.RasterBI;
 import rasterops.*;
+import rasterops.fill.SeedFill4;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -24,6 +25,8 @@ public class Canvas {
     LinerAligned linerAligned = new LinerAligned();
     Polygon polygon = new Polygon();
     Polygoner polygoner = new Polygoner(linerTrivial, linerDotted);
+
+    SeedFill4 seedFill4 = new SeedFill4();
     double x1;
     double y1;
     double x2;
@@ -153,6 +156,9 @@ public class Canvas {
                             panel.repaint();
                         }
                     }
+//                    if (mouseEvent.getButton() == MouseEvent.BUTTON2) {
+//                        seedFill4.fill(img, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff, );
+//                    }
                     if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                         clear();
                         polygoner.updatePolygon(polygon, mouseEvent);
