@@ -27,6 +27,8 @@ public class Canvas {
     Polygon polygon = new Polygon();
     Polygoner polygoner = new Polygoner(linerTrivial, linerDotted);
 
+    Polygon clipPolygon = new Polygon();
+
     SeedFill4 seedFill4 = new SeedFill4();
     double x1;
     double y1;
@@ -37,6 +39,8 @@ public class Canvas {
     boolean polygonMode = false;
     boolean dashedLineMode = false;
     boolean alignMode = false;
+
+    boolean clipMode = false;
 
     public Canvas(int width, int height) {
         frame = new JFrame();
@@ -78,6 +82,7 @@ public class Canvas {
             public void keyPressed(KeyEvent e){
                 if(e.getKeyCode() == KeyEvent.VK_C) {
                     polygon.clearPoints();
+                    clipPolygon.clearPoints();
                     clear();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_L) {
@@ -108,6 +113,21 @@ public class Canvas {
                 if (e.getKeyCode() == KeyEvent.VK_I) {
                     ScanLine scanline = new ScanLine();
                     scanline.fill(img, polygon, 0xff00ff, 0x00ff00, polygoner, linerTrivial);
+                    panel.repaint();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_O){
+                    clear();
+                    lineMode = false;
+                    polygonMode = false;
+                    clipMode = !clipMode;
+                    panel.repaint();
+                    polygoner.rasterize(img, polygon, linerTrivial, 0xffffff);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_U){
+                    Clipper clipper = new Clipper(polygon);
+                    Polygon clippedPolygon = new Polygon(clipper.clipPolygon(clipPolygon));
+                    ScanLine clippedScanLine = new ScanLine();
+                    clippedScanLine.fill(img, clippedPolygon, 0xf000ff, 0x000ff0,polygoner, linerTrivial);
                     panel.repaint();
                 }
             }
@@ -178,6 +198,18 @@ public class Canvas {
                     y2 = mouseEvent.getY();
                     linerAligned.drawLine(img, x1, y1, x2, y2, 0xff00ff);
                     panel.repaint();
+                }
+                if (clipMode){
+                    if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+                        clear();
+                        clipPolygon.addPoint(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                        if (clipPolygon.getCount() >= 2) {
+                            polygoner.rasterize(img, clipPolygon, linerTrivial, 0xffff00);
+                            polygoner.rasterize(img, polygon, linerTrivial, 0xffffff);
+                            panel.repaint();
+                        }
+                    }
+
                 }
             }
 

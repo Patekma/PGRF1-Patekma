@@ -10,6 +10,13 @@ public class Polygon {
         this.points = new ArrayList<>();
     }
 
+    public Polygon(Polygon clipPolygon) {
+        this.points = new ArrayList<>();
+        for (int i = 0; i < clipPolygon.getCount(); i++) {
+            this.points.add(clipPolygon.getPoint(i));
+        }
+    }
+
     public void addPoint(Point p) {
         points.add(p);
     }
