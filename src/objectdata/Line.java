@@ -1,7 +1,5 @@
 package objectdata;
 
-import java.awt.geom.Point2D;
-
 public class Line {
 
     final Point p1;

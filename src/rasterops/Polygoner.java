@@ -5,6 +5,7 @@ import objectdata.Polygon;
 import rasterdata.Raster;
 
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class Polygoner {
     private LinerTrivial linerTrivial;
@@ -68,6 +69,21 @@ public class Polygoner {
                 polygon.getPoint(i).setY(mouseEvent.getY());
             }
         }
+
+    }
+
+
+    //nová a jednodušší rasterizace: využita při scanLine
+    public void rasterize(Raster img, Polygon polygon, LinerTrivial liner, int color){
+        List<Point> points = polygon.getPoints();
+        for (int i = 1; i < points.size(); i++) {
+            Point prev = points.get(i - 1);
+            Point curr = points.get(i);
+            liner.drawLine(img, prev.getX(), prev.getY(), curr.getX(), curr.getY(), color);
+        }
+        Point last = points.get(points.size() - 1);
+        Point first = points.get(0);
+        liner.drawLine(img, last.getX(), last.getY(), first.getX(), first.getY(), color);
 
     }
 }

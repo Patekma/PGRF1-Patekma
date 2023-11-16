@@ -2,6 +2,7 @@ import objectdata.Point;
 import objectdata.Polygon;
 import rasterdata.RasterBI;
 import rasterops.*;
+import rasterops.fill.ScanLine;
 import rasterops.fill.SeedFill4;
 
 import java.awt.BorderLayout;
@@ -104,6 +105,11 @@ public class Canvas {
                     lineMode = false;
                     panel.repaint();
                 }
+                if (e.getKeyCode() == KeyEvent.VK_I) {
+                    ScanLine scanline = new ScanLine();
+                    scanline.fill(img, polygon, 0xff00ff, 0x00ff00, polygoner, linerTrivial);
+                    panel.repaint();
+                }
             }
         });
 
@@ -152,7 +158,7 @@ public class Canvas {
                         clear();
                         polygon.addPoint(new Point(mouseEvent.getX(), mouseEvent.getY()));
                         if (polygon.getCount() > 1) {
-                            polygoner.rasterizePolygon(img, polygon, 0xffffff, mouseEvent);
+                            polygoner.rasterize(img, polygon, linerTrivial, 0xffffff);
                             panel.repaint();
                         }
                     }
