@@ -156,9 +156,10 @@ public class Canvas {
                             panel.repaint();
                         }
                     }
-//                    if (mouseEvent.getButton() == MouseEvent.BUTTON2) {
-//                        seedFill4.fill(img, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff, );
-//                    }
+                    if (mouseEvent.getButton() == MouseEvent.BUTTON2) {
+                        seedFill4.fill(img, mouseEvent.getX(), mouseEvent.getY(), 0xffff00, color -> color == 0xff2f2f2f);
+                        panel.repaint();
+                    }
                     if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                         clear();
                         polygoner.updatePolygon(polygon, mouseEvent);

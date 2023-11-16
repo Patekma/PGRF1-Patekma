@@ -38,7 +38,7 @@ public class RasterBI implements Raster, Presentable{
         if (c > this.getWidth() - 1 || c < 0 || r > this.getHeight() - 1 || r < 0){
             return Optional.empty();
         }else{
-            return Optional.of(img.getRGB(r,c));
+            return Optional.of(img.getRGB(c,r));
         }
     }
 
