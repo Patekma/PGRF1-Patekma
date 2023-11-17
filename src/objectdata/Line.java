@@ -41,6 +41,6 @@ public class Line {
         double v = (x1 - x2) * (ya - yb) - (y1 - y2) * (xa - xb);
         x = ((x1 * y2 - x2 * y1) * (xa - xb) - (xa * yb - xb * ya) * (x1 - x2)) / v;
         y = ((x1 * y2 - x2 * y1) * (ya - yb) - (xa * yb - xb * ya) * (y1 - y2)) / v;
-        return new Point((int) Math.round(x), (int) Math.round(y));
+        return new Point(Math.round(x), Math.round(y));
     }
 }

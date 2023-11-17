@@ -1,5 +1,6 @@
 import objectdata.Point;
 import objectdata.Polygon;
+import objectdata.Rectangle;
 import rasterdata.RasterBI;
 import rasterops.*;
 import rasterops.fill.ScanLine;
@@ -25,7 +26,10 @@ public class Canvas {
     LinerDashed linerDashed = new LinerDashed(10,10);
     LinerAligned linerAligned = new LinerAligned();
     Polygon polygon = new Polygon();
+    Rectangle rectangle = new Rectangle();
+    Polygon recPolygon = new Polygon();
     Polygoner polygoner = new Polygoner(linerTrivial, linerDotted);
+    Rectangler rectangler = new Rectangler(linerTrivial);
 
     Polygon clipPolygon = new Polygon();
 
@@ -39,8 +43,8 @@ public class Canvas {
     boolean polygonMode = false;
     boolean dashedLineMode = false;
     boolean alignMode = false;
-
     boolean clipMode = false;
+    boolean rectangleMode = false;
 
     public Canvas(int width, int height) {
         frame = new JFrame();
@@ -89,6 +93,7 @@ public class Canvas {
                     lineMode = !lineMode;
                     polygonMode = false;
                     alignMode = false;
+                    rectangleMode = false;
                     clear();
                     panel.repaint();
                 }
@@ -97,6 +102,7 @@ public class Canvas {
                     lineMode = false;
                     polygonMode = !polygonMode;
                     alignMode = false;
+                    rectangleMode = false;
                     clear();
                     panel.repaint();
                 }
@@ -108,6 +114,7 @@ public class Canvas {
                     alignMode = !alignMode;
                     polygonMode = false;
                     lineMode = false;
+                    rectangleMode = false;
                     panel.repaint();
                 }
                 if (e.getKeyCode() == KeyEvent.VK_I) {
@@ -119,6 +126,7 @@ public class Canvas {
                     clear();
                     lineMode = false;
                     polygonMode = false;
+                    rectangleMode = false;
                     clipMode = !clipMode;
                     panel.repaint();
                     polygoner.rasterize(img, polygon, linerTrivial, 0xffffff);
@@ -126,8 +134,16 @@ public class Canvas {
                 if (e.getKeyCode() == KeyEvent.VK_U){
                     Clipper clipper = new Clipper(polygon);
                     Polygon clippedPolygon = new Polygon(clipper.clipPolygon(clipPolygon));
-                    ScanLine clippedScanLine = new ScanLine();
-                    clippedScanLine.fill(img, clippedPolygon, 0xf000ff, 0x000ff0,polygoner, linerTrivial);
+                    ScanLine scanFiller = new ScanLine();
+                    scanFiller.fill(img, clippedPolygon, 0xffffff, 0x000000, polygoner, linerTrivial);
+                    panel.repaint();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_R){
+                    clear();
+                    lineMode = false;
+                    polygonMode = false;
+                    clipMode = false;
+                    rectangleMode =! rectangleMode;
                     panel.repaint();
                 }
             }
@@ -209,6 +225,22 @@ public class Canvas {
                             panel.repaint();
                         }
                     }
+                }
+                if (rectangleMode){
+                    if (rectangle.getCount() < 1) {
+                        rectangle.addPoint(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                    } else if (rectangle.getCount() < 2){
+                        clear();
+                        rectangle.addPoint(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                        rectangler.rasterizeRectangle(img, rectangle, 0xff00ff, linerTrivial);
+                        panel.repaint();
+                    } else {
+                        clear();
+                        rectangle.getPoint(1).setX(mouseEvent.getX());
+                        rectangle.getPoint(1).setY(mouseEvent.getY());
+                        rectangler.rasterizeRectangle(img, rectangle, 0xff00ff, linerTrivial);
+                        panel.repaint();
+                    }
 
                 }
             }
@@ -242,6 +274,25 @@ public class Canvas {
                         clear();
                         linerAligned.drawLine(img, x1, y1, mouseEvent.getX(), mouseEvent.getY(), 0xff00ff);
                         panel.repaint();
+                    }
+                    if (rectangleMode){
+                        if (rectangle.getCount() == 0){
+                            return;
+                        }
+                        if (rectangle.getCount() < 2){
+                            clear();
+                            rectangle.addPoint(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                            rectangler.rasterizeRectangle(img, rectangle, 0xff00ff, linerDashed);
+                            panel.repaint();
+                        }
+                        if (rectangle.getCount() == 2){
+                            clear();
+                            rectangle.getPoint(1).setX(mouseEvent.getX());
+                            rectangle.getPoint(1).setY(mouseEvent.getY());
+                            rectangler.rasterizeRectangle(img, rectangle, 0xff00ff, linerDashed);
+                            panel.repaint();
+                        }
+
                     }
             }
 
