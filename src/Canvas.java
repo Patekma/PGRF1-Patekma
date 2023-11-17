@@ -1,3 +1,4 @@
+import objectdata.Ellipse;
 import objectdata.Point;
 import objectdata.Polygon;
 import objectdata.Rectangle;
@@ -29,10 +30,9 @@ public class Canvas {
     Rectangle rectangle = new Rectangle();
     Polygon recPolygon = new Polygon();
     Polygoner polygoner = new Polygoner(linerTrivial, linerDotted);
-    Rectangler rectangler = new Rectangler(linerTrivial);
-
+    Rectangler rectangler = new Rectangler();
+    Ellipse ellipse = new Ellipse();
     Polygon clipPolygon = new Polygon();
-
     SeedFill4 seedFill4 = new SeedFill4();
     double x1;
     double y1;
@@ -146,6 +146,13 @@ public class Canvas {
                     rectangleMode =! rectangleMode;
                     panel.repaint();
                 }
+                if (e.getKeyCode() == KeyEvent.VK_E){
+                    if (rectangleMode) {
+                        Point midpoint = new Point((rectangle.getPoint(0).getX() + rectangle.getPoint(1).getX()) / 2, (rectangle.getPoint(0).getY() + rectangle.getPoint(1).getY()) / 2);
+                        ellipse.draw(img, midpoint.getX(), midpoint.getY(), Math.abs(rectangle.getPoint(1).getX() - rectangle.getPoint(0).getX()) / 2, Math.abs(rectangle.getPoint(1).getY() - rectangle.getPoint(0).getY()) / 2, 0xf0000f);
+                        panel.repaint();
+                    }
+                }
             }
         });
 
@@ -232,13 +239,13 @@ public class Canvas {
                     } else if (rectangle.getCount() < 2){
                         clear();
                         rectangle.addPoint(new Point(mouseEvent.getX(), mouseEvent.getY()));
-                        rectangler.rasterizeRectangle(img, rectangle, 0xff00ff, linerTrivial);
+                        rectangler.rasterizeRectangle(img, rectangle, 0xff000f, linerTrivial);
                         panel.repaint();
                     } else {
                         clear();
                         rectangle.getPoint(1).setX(mouseEvent.getX());
                         rectangle.getPoint(1).setY(mouseEvent.getY());
-                        rectangler.rasterizeRectangle(img, rectangle, 0xff00ff, linerTrivial);
+                        rectangler.rasterizeRectangle(img, rectangle, 0xff000f, linerTrivial);
                         panel.repaint();
                     }
 
@@ -282,14 +289,14 @@ public class Canvas {
                         if (rectangle.getCount() < 2){
                             clear();
                             rectangle.addPoint(new Point(mouseEvent.getX(), mouseEvent.getY()));
-                            rectangler.rasterizeRectangle(img, rectangle, 0xff00ff, linerDashed);
+                            rectangler.rasterizeRectangle(img, rectangle, 0xff000f, linerDashed);
                             panel.repaint();
                         }
                         if (rectangle.getCount() == 2){
                             clear();
                             rectangle.getPoint(1).setX(mouseEvent.getX());
                             rectangle.getPoint(1).setY(mouseEvent.getY());
-                            rectangler.rasterizeRectangle(img, rectangle, 0xff00ff, linerDashed);
+                            rectangler.rasterizeRectangle(img, rectangle, 0xff000f, linerDashed);
                             panel.repaint();
                         }
 

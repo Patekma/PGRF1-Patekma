@@ -5,7 +5,7 @@ import rasterdata.Raster;
 
 public class Rectangler {
 
-    public Rectangler(LinerTrivial linerTrivial) {
+    public Rectangler() {
     }
 
     public void rasterizeRectangle(Raster img, Rectangle rectangle, int color, Liner liner){
