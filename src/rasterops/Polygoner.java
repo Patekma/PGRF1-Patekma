@@ -44,7 +44,6 @@ public class Polygoner {
         double tempPointX;
         double tempPointY;
         double tempPointValue;
-        int temp;
         for (int i = 0; i < polygon.getCount(); i++) {
             /*
             pro zjištění vzdálenosti kde se klikce myší:

@@ -11,20 +11,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ScanLine{
-
+public class TriangleFill {
     public void fill(Raster img, Polygon polygon, int fillColor, int edgeColor, Polygoner polygoner, LinerTrivial linerTrivial){
-        //seznam hran
+        // List hran
         List<Edge> edges = new ArrayList<>();
 
-        //projde body a vytvori hrany
+        // Vytvorime hrany z bodů
         for (int i = 0; i < polygon.getCount(); i++) {
             int nextIndex = (i + 1) % polygon.getCount();
             Point p1 = polygon.getPoint(i);
             Point p2 = polygon.getPoint(nextIndex);
             Edge edge = new Edge(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-
-            //kontrola orientace
             if (!edge.isHorizontal()) {
                 edge.orientate();
                 edge.shorten();
@@ -32,7 +29,6 @@ public class ScanLine{
             }
         }
 
-        //min a max y polygonu
         double yMin = polygon.getPoint(0).getY();
         double yMax = yMin;
         for (Point p : polygon.getPoints()) {
@@ -45,27 +41,48 @@ public class ScanLine{
         }
 
         for (double y = yMin; y <= yMax; y++) {
-
-            //list pruseciku
             List<Integer> prusecik = new ArrayList<>();
-
             for (Edge edge : edges) {
                 if (edge.isIntersection(y)) {
                     prusecik.add(edge.getIntersection(y));
                 }
             }
 
-            //sort listu pruseciku
             Collections.sort(prusecik);
 
-            //nakresli lines mezi páry pruseciku
-            for (int i = 0; i < prusecik.size()-1; i += 2) {
-                linerTrivial.drawLine(img, prusecik.get(i), y, prusecik.get(i+1), y, fillColor);
+            for (int i = 0; i < prusecik.size() - 1; i += 2) {
+                int x1 = prusecik.get(i);
+                int x2 = prusecik.get(i + 1);
+
+                // Draw triangular pattern
+                drawTriangularPattern(img, x1, y, x2, fillColor);
             }
         }
 
-        //hrany polygonu
         polygoner.rasterize(img, polygon, linerTrivial, edgeColor);
-
     }
+
+    private void drawTriangularPattern(Raster img, int x1, double y1, int x2, int fillColor) {
+        boolean drawTriangle = true;
+        int gapSize = 1; //mezera
+
+        for (int x = x1; x <= x2; x += gapSize) {
+            if (drawTriangle) {
+                // Horní roh trojuhelniku
+                img.setColor(x, (int) y1, fillColor);
+
+                // Levý roh trojuhelniku
+                for (int i = 1; i <= gapSize; i++) {
+                    img.setColor(x + i, (int) y1 + i, fillColor);
+                }
+
+                // Pravý roh trojuhelniku
+                for (int i = 1; i <= gapSize; i++) {
+                    img.setColor(x - i, (int) y1 + i, fillColor);
+                }
+            }
+
+            drawTriangle = !drawTriangle;
+        }
+}
 }

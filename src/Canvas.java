@@ -6,6 +6,7 @@ import rasterdata.RasterBI;
 import rasterops.*;
 import rasterops.fill.ScanLine;
 import rasterops.fill.SeedFill4;
+import rasterops.fill.TriangleFill;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -28,7 +29,6 @@ public class Canvas {
     LinerAligned linerAligned = new LinerAligned();
     Polygon polygon = new Polygon();
     Rectangle rectangle = new Rectangle();
-    Polygon recPolygon = new Polygon();
     Polygoner polygoner = new Polygoner(linerTrivial, linerDotted);
     Rectangler rectangler = new Rectangler();
     Ellipse ellipse = new Ellipse();
@@ -120,6 +120,11 @@ public class Canvas {
                 if (e.getKeyCode() == KeyEvent.VK_I) {
                     ScanLine scanline = new ScanLine();
                     scanline.fill(img, polygon, 0xff00ff, 0x00ff00, polygoner, linerTrivial);
+                    panel.repaint();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_T) {
+                    TriangleFill triangleFill = new TriangleFill();
+                    triangleFill.fill(img, polygon, 0xffffff, 0x00ff00, polygoner, linerTrivial);
                     panel.repaint();
                 }
                 if (e.getKeyCode() == KeyEvent.VK_O){
