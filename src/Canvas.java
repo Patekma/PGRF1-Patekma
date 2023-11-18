@@ -79,6 +79,11 @@ public class Canvas {
             Úsečka: L
             Čárkovaná úsečka: J
             Zarovnaná úsečka: SHIFT
+            ScanLine: I
+            Vyplnění trojuhelniky: T
+            Orezavani: O, U
+            Zarovnany obdelnik: R
+            Elipsa v obdelniku: E
             Clear: C
             */
         panel.addKeyListener(new KeyAdapter() {
