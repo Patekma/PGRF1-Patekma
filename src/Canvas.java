@@ -85,6 +85,7 @@ public class Canvas {
             Zarovnany obdelnik: R
             Elipsa v obdelniku: E
             Clear: C
+
             */
         panel.addKeyListener(new KeyAdapter() {
             @Override
