@@ -1,5 +1,7 @@
+import objectdata.Prism;
 import objectdata.Cube;
 import objectdata.Pyramid;
+import objectdata.Scene;
 import rasterdata.RasterBI;
 import rasterops.LinerTrivial;
 import rasterops.WiredRenderer;
@@ -16,17 +18,27 @@ public class Canvas3D {
 
     private RasterBI img;
 
+    private Scene scene = new Scene();
+
     private Camera camera;
 
     private Point2D mousePos;
     Cube cube = new Cube();
     Pyramid pyramid = new Pyramid();
+    Prism prism = new Prism();
 
     LinerTrivial linerTrivial = new LinerTrivial();
 
     WiredRenderer renderer = new WiredRenderer(linerTrivial);
 
     Mat4OrthoRH proj = new Mat4OrthoRH(8, 8, 8, 8);
+
+    Mat4Transl cubeTransl = new Mat4Transl(new Vec3D(2, 2, 1));
+    Mat4Transl prismTransl = new Mat4Transl(new Vec3D(-1, -2, 0));
+    Mat4Transl pyramidTransl = new Mat4Transl(new Vec3D(0, 0, 0));
+    Mat4RotXYZ cubeRotate = new Mat4RotXYZ(8, 8, 8);
+    Mat4 cubeModel = cubeTransl.mul(cubeRotate);
+    public int selected = 1;
 
     public Canvas3D(int width, int height) {
         frame = new JFrame();
@@ -133,6 +145,99 @@ public class Canvas3D {
             case KeyEvent.VK_D:
                 camera = camera.down(0.1);
                 break;
+            case KeyEvent.VK_J:
+                selected = 1;
+                break;
+            case KeyEvent.VK_K:
+                selected = 2;
+                break;
+            case KeyEvent.VK_L:
+                selected = 3;
+                break;
+            case KeyEvent.VK_NUMPAD8:
+                if (selected == 1){
+                    cubeTransl = new Mat4Transl(cubeTransl.get(3, 0), cubeTransl.get(3, 1), cubeTransl.get(3, 2) + 0.1);
+                    cube.setModel(cubeTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                if (selected == 2){
+                    prismTransl = new Mat4Transl(prismTransl.get(3, 0), prismTransl.get(3, 1), prismTransl.get(3, 2) + 0.1);
+                    prism.setModel(prismTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                if (selected == 3){
+                    pyramidTransl = new Mat4Transl(pyramidTransl.get(3, 0), pyramidTransl.get(3, 1), pyramidTransl.get(3, 2) + 0.1);
+                    pyramid.setModel(pyramidTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                break;
+            case KeyEvent.VK_NUMPAD2:
+                if (selected == 1){
+                    cubeTransl = new Mat4Transl(cubeTransl.get(3, 0), cubeTransl.get(3, 1), cubeTransl.get(3, 2) - 0.1);
+                    cube.setModel(cubeTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                if (selected == 2){
+                    prismTransl = new Mat4Transl(prismTransl.get(3, 0), prismTransl.get(3, 1), prismTransl.get(3, 2) - 0.1);
+                    prism.setModel(prismTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                if (selected == 3){
+                    pyramidTransl = new Mat4Transl(pyramidTransl.get(3, 0), pyramidTransl.get(3, 1), pyramidTransl.get(3, 2) - 0.1);
+                    pyramid.setModel(pyramidTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                break;
+            case KeyEvent.VK_NUMPAD4:
+                if (selected == 1){
+                    cubeTransl = new Mat4Transl(cubeTransl.get(3, 0), cubeTransl.get(3, 1) + 0.1, cubeTransl.get(3, 2));
+                    cube.setModel(cubeTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                if (selected == 2){
+                    prismTransl = new Mat4Transl(prismTransl.get(3, 0), prismTransl.get(3, 1) + 0.1, prismTransl.get(3, 2));
+                    prism.setModel(prismTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                if (selected == 3){
+                    pyramidTransl = new Mat4Transl(pyramidTransl.get(3, 0), pyramidTransl.get(3, 1) + 0.1, pyramidTransl.get(3, 2));
+                    pyramid.setModel(pyramidTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                break;
+            case KeyEvent.VK_NUMPAD6:
+                if (selected == 1){
+                    cubeTransl = new Mat4Transl(cubeTransl.get(3, 0), cubeTransl.get(3, 1) - 0.1, cubeTransl.get(3, 2));
+                    cube.setModel(cubeTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                if (selected == 2){
+                    prismTransl = new Mat4Transl(prismTransl.get(3, 0), prismTransl.get(3, 1) - 0.1, prismTransl.get(3, 2));
+                    prism.setModel(prismTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                if (selected == 3){
+                    pyramidTransl = new Mat4Transl(pyramidTransl.get(3, 0), pyramidTransl.get(3, 1) - 0.1, pyramidTransl.get(3, 2));
+                    pyramid.setModel(pyramidTransl);
+                    renderScene();
+                    panel.repaint();
+                }
+                break;
+            case KeyEvent.VK_NUMPAD9:
+                    cubeRotate = new Mat4RotXYZ(cubeRotate.get(3,0), cubeRotate.get(3,1), cubeRotate.get(3,2) + 0.1);
+
+                break;
         }
 //        draw();
         renderScene();
@@ -148,8 +253,15 @@ public class Canvas3D {
     }
 
     public void start() {
-//            draw();
+
+        cube.setModel(cubeModel);
+        prism.setModel(prismTransl);
+        pyramid.setModel(pyramidTransl);
+
+        draw();
+        renderScene();
         panel.repaint();
+
     }
 
     public void clear() {
@@ -161,8 +273,12 @@ public class Canvas3D {
         draw();
         renderer.setView(camera.getViewMatrix());
         renderer.setProj(proj);
+
         renderer.render(cube, 0xff00ff);
+
         renderer.render(pyramid, 0x00ffff);
+
+        renderer.render(prism, 0xff0000);
         panel.repaint();
     }
 
