@@ -12,7 +12,6 @@ public class Canvas3D {
 
     private JFrame frame;
     private JPanel panel;
-
     private RasterBI img;
 
     private Camera camera;
@@ -32,19 +31,8 @@ public class Canvas3D {
 
     WiredRenderer renderer = new WiredRenderer(linerTrivial);
 
-    // TODO: prohazovani kamer
-    /*
-    if () {
-        proj = new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100);
-    }
-    if () {
-        proj = new Mat4OrthoRH(8, 8, 8, 8);
-    }
-     */
-
     Mat4PerspRH proj = new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100);
 //    Mat4OrthoRH proj = new Mat4OrthoRH(8, 8, 8, 8);
-
     Mat4Transl cubeTransl = new Mat4Transl(new Vec3D(2, 2, 1));
     Mat4Transl prismTransl = new Mat4Transl(new Vec3D(-1, 0, 2));
     Mat4Transl pyramidTransl = new Mat4Transl(new Vec3D(0, -1, -3));
@@ -58,7 +46,7 @@ public class Canvas3D {
 
     Mat4 cubeModel = cubeTransl.mul(cubeRotate);
     public int selected = 1;
-    int cameraMode = 1;
+
 
     public Canvas3D(int width, int height) {
         frame = new JFrame();
@@ -158,29 +146,23 @@ public class Canvas3D {
         int key = e.getKeyCode();
 
         switch (key) {
-            case KeyEvent.VK_UP:
-                camera = camera.up(1.0);
+            case KeyEvent.VK_W:
+                camera = camera.up(0.1);
                 break;
-            case KeyEvent.VK_DOWN:
-                camera = camera.down(1.0);
+            case KeyEvent.VK_S:
+                camera = camera.down(0.1);
                 break;
-            case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_A:
                 camera = camera.left(0.1);
                 break;
-            case KeyEvent.VK_RIGHT:
+            case KeyEvent.VK_D:
                 camera = camera.right(0.1);
                 break;
             case KeyEvent.VK_E:
                 camera = camera.forward(0.1);
                 break;
-            case KeyEvent.VK_D:
+            case KeyEvent.VK_Q:
                 camera = camera.backward(0.1);
-                break;
-            case KeyEvent.VK_N:
-                cameraMode = 1;
-                break;
-            case KeyEvent.VK_M:
-                cameraMode = 2;
                 break;
         }
     }
@@ -285,6 +267,26 @@ public class Canvas3D {
     }
 
     public void start() {
+
+        System.out.println(
+                "Controls:\n" +
+                        "========================\n" +
+                        "Camera movent: WSAD\n" +
+                        "Forward/Backward: E/Q\n" +
+                        "Look: LMB\n" +
+                        "========================\n" +
+                        "Select object:\n" +
+                        "J - Cube\n" +
+                        "K - Prism\n" +
+                        "L - Pyramid\n" +
+                        "U - Ferguson\n" +
+                        "I - Coons\n" +
+                        "O - Bezier\n" +
+                        "========================\n" +
+                        "Move object: Numpad 8/2/4/6\n" +
+                        "Rotate object: Numpad 7/9\n" +
+                        "Size: Mouse wheel"
+        );
 
         cube.setModel(cubeModel);
         prism.setModel(prismTransl);
