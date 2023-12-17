@@ -18,7 +18,6 @@ public class Canvas3D {
     private Camera camera;
 
     private Point2D mousePos;
-    // TODO: rozhazet objekty po scene
     Cube cube = new Cube();
     Pyramid pyramid = new Pyramid();
     Prism prism = new Prism();
@@ -47,9 +46,12 @@ public class Canvas3D {
 //    Mat4OrthoRH proj = new Mat4OrthoRH(8, 8, 8, 8);
 
     Mat4Transl cubeTransl = new Mat4Transl(new Vec3D(2, 2, 1));
-    Mat4Transl prismTransl = new Mat4Transl(new Vec3D(-1, -2, 0));
-    Mat4Transl pyramidTransl = new Mat4Transl(new Vec3D(0, 0, 0));
-    Mat4Transl animatedCubeTrans = new Mat4Transl(new Vec3D(3, 3, 3));
+    Mat4Transl prismTransl = new Mat4Transl(new Vec3D(-1, 0, 2));
+    Mat4Transl pyramidTransl = new Mat4Transl(new Vec3D(0, -1, -3));
+    Mat4Transl animatedCubeTrans = new Mat4Transl(new Vec3D(0, 4, 0));
+    Mat4Transl fergusonTransl = new Mat4Transl(new Vec3D(-4, 4, 3));
+    Mat4Transl coonsTransl = new Mat4Transl(new Vec3D(0, 1, 4));
+    Mat4Transl bezierTransl = new Mat4Transl(new Vec3D(0, -5, 1));
     double change = 0;
     Mat4RotXYZ animatedCubeRotate = new Mat4RotXYZ(0, 50, 0);
     Mat4RotXYZ cubeRotate = new Mat4RotXYZ(8, 8, 8);
@@ -137,6 +139,9 @@ public class Canvas3D {
                 cube.setModel(cube.getModel().mul(modifier));
                 pyramid.setModel(pyramid.getModel().mul(modifier));
                 prism.setModel(prism.getModel().mul(modifier));
+                ferguson.setModel(ferguson.getModel().mul(modifier));
+                coons.setModel(coons.getModel().mul(modifier));
+                bezier.setModel(bezier.getModel().mul(modifier));
                 renderScene();
                 panel.repaint();
             }
@@ -177,32 +182,34 @@ public class Canvas3D {
             case KeyEvent.VK_M:
                 cameraMode = 2;
                 break;
-            case KeyEvent.VK_NUMPAD9:
-                //rotace
-                // TODO: pro vsechny telesa, do jine metody
-                cube.setModel(cube.getModel().mul(new Mat4Rot(1, 2, 0, 0)));
-                break;
         }
     }
 
     private void selectSolid(KeyEvent e) {
-        // TODO: add cubics
         int key = e.getKeyCode();
         switch (key) {
             case KeyEvent.VK_J:
-                selected = 1;
+                selected = 1; //cube
                 break;
             case KeyEvent.VK_K:
-                selected = 2;
+                selected = 2; //prism
                 break;
             case KeyEvent.VK_L:
-                selected = 3;
+                selected = 3; //pyramid
+                break;
+            case KeyEvent.VK_U:
+                selected = 4; //ferguson
+                break;
+            case KeyEvent.VK_I:
+                selected = 5; //coons
+                break;
+            case KeyEvent.VK_O:
+                selected = 6; //bezier
                 break;
         }
     }
 
     private void moveSolid(KeyEvent e) {
-        // TODO: add cubics
         int key = e.getKeyCode();
         switch (key) {
             case KeyEvent.VK_NUMPAD8:
@@ -217,6 +224,12 @@ public class Canvas3D {
             case KeyEvent.VK_NUMPAD6:
                 moveSelectedSolid(new Mat4Transl(0, -1, 0));
                 break;
+            case KeyEvent.VK_NUMPAD9:
+                rotateSelectedSolid(new Mat4Rot(1, 2, 0, 0));
+                break;
+            case KeyEvent.VK_NUMPAD7:
+                rotateSelectedSolid(new Mat4Rot(-1, 2, 0, 0));
+                break;
         }
     }
 
@@ -230,7 +243,37 @@ public class Canvas3D {
         if(selected == 3){
             pyramid.setModel(pyramid.getModel().mul(value));
         }
+        if(selected == 4){
+            ferguson.setModel(ferguson.getModel().mul(value));
+        }
+        if(selected == 5){
+            coons.setModel(prism.getModel().mul(value));
+        }
+        if(selected == 6){
+            bezier.setModel(pyramid.getModel().mul(value));
+        }
 
+    }
+
+    public void rotateSelectedSolid(Mat4Rot value){
+        if(selected == 1){
+            cube.setModel(cube.getModel().mul(value));
+        }
+        if(selected == 2){
+            prism.setModel(prism.getModel().mul(value));
+        }
+        if(selected == 3){
+            pyramid.setModel(pyramid.getModel().mul(value));
+        }
+        if(selected == 4){
+            ferguson.setModel(ferguson.getModel().mul(value));
+        }
+        if(selected == 5){
+            coons.setModel(prism.getModel().mul(value));
+        }
+        if(selected == 6){
+            bezier.setModel(pyramid.getModel().mul(value));
+        }
     }
 
     public void present(Graphics graphics) {
@@ -246,6 +289,10 @@ public class Canvas3D {
         cube.setModel(cubeModel);
         prism.setModel(prismTransl);
         pyramid.setModel(pyramidTransl);
+
+        ferguson.setModel(fergusonTransl);
+        coons.setModel(coonsTransl);
+        bezier.setModel(bezierTransl);
 
         draw();
         renderScene();
