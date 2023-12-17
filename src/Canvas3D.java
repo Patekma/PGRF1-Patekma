@@ -1,7 +1,4 @@
-import objectdata.Prism;
-import objectdata.Cube;
-import objectdata.Pyramid;
-import objectdata.Scene;
+import objectdata.*;
 import rasterdata.RasterBI;
 import rasterops.LinerTrivial;
 import rasterops.WiredRenderer;
@@ -18,27 +15,48 @@ public class Canvas3D {
 
     private RasterBI img;
 
-    private Scene scene = new Scene();
-
     private Camera camera;
 
     private Point2D mousePos;
+    // TODO: rozhazet objekty po scene
     Cube cube = new Cube();
     Pyramid pyramid = new Pyramid();
     Prism prism = new Prism();
+    Axes axes = new Axes();
+    InterpolatedCubic ferguson = new InterpolatedCubic(Cubic.FERGUSON);
+    InterpolatedCubic coons = new InterpolatedCubic(Cubic.COONS);
+    InterpolatedCubic bezier = new InterpolatedCubic(Cubic.BEZIER);
+
+    Cube animatedCube = new Cube();
 
     LinerTrivial linerTrivial = new LinerTrivial();
 
     WiredRenderer renderer = new WiredRenderer(linerTrivial);
 
-    Mat4OrthoRH proj = new Mat4OrthoRH(8, 8, 8, 8);
+    // TODO: prohazovani kamer
+    /*
+    if () {
+        proj = new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100);
+    }
+    if () {
+        proj = new Mat4OrthoRH(8, 8, 8, 8);
+    }
+     */
+
+    Mat4PerspRH proj = new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100);
+//    Mat4OrthoRH proj = new Mat4OrthoRH(8, 8, 8, 8);
 
     Mat4Transl cubeTransl = new Mat4Transl(new Vec3D(2, 2, 1));
     Mat4Transl prismTransl = new Mat4Transl(new Vec3D(-1, -2, 0));
     Mat4Transl pyramidTransl = new Mat4Transl(new Vec3D(0, 0, 0));
+    Mat4Transl animatedCubeTrans = new Mat4Transl(new Vec3D(3, 3, 3));
+    double change = 0;
+    Mat4RotXYZ animatedCubeRotate = new Mat4RotXYZ(0, 50, 0);
     Mat4RotXYZ cubeRotate = new Mat4RotXYZ(8, 8, 8);
+
     Mat4 cubeModel = cubeTransl.mul(cubeRotate);
     public int selected = 1;
+    int cameraMode = 1;
 
     public Canvas3D(int width, int height) {
         frame = new JFrame();
@@ -67,7 +85,7 @@ public class Canvas3D {
         frame.setVisible(true);
         panel.requestFocusInWindow();
 
-        camera = new Camera(new Vec3D(0.0, 0.0, 0.0), 0.0, 0.0, 1.0, true);
+        camera = new Camera(new Vec3D(-15, 1, 1), 0.0, 0.0, 1.0, true);
 
         renderer.setView(camera.getViewMatrix());
         renderer.setProj(proj);
@@ -75,16 +93,12 @@ public class Canvas3D {
 
         panel.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
             public void keyPressed(KeyEvent e) {
                 cameraMovement(e);
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
+                selectSolid(e);
+                moveSolid(e);
+                renderScene();
+                panel.repaint();
             }
         });
 
@@ -111,40 +125,70 @@ public class Canvas3D {
             }
         });
 
+        panel.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                Mat4 modifier;
+                if (e.getWheelRotation() < 0) {
+                    modifier = new Mat4Scale(1.2, 1.2, 1.2);
+                } else {
+                    modifier = new Mat4Scale(0.8, 0.8, 0.8);
+                }
+                cube.setModel(cube.getModel().mul(modifier));
+                pyramid.setModel(pyramid.getModel().mul(modifier));
+                prism.setModel(prism.getModel().mul(modifier));
+                renderScene();
+                panel.repaint();
+            }
+        });
+
         panel.setFocusable(true);
 
         renderScene();
         panel.repaint();
+        startAnimation();
     }
 
     private void cameraMovement(KeyEvent e) {
         int key = e.getKeyCode();
 
-        // Adjust camera based on key events
         switch (key) {
             case KeyEvent.VK_UP:
-                camera = camera.forward(1.0);
-                System.out.println(camera.getPosition());
-                System.out.println(cube.getModel());
+                camera = camera.up(1.0);
                 break;
             case KeyEvent.VK_DOWN:
-                camera = camera.backward(1.0);
-                System.out.println(camera.getPosition());
+                camera = camera.down(1.0);
                 break;
             case KeyEvent.VK_LEFT:
-                camera = camera.right(0.1);
-                System.out.println(camera.getPosition());
+                camera = camera.left(0.1);
                 break;
             case KeyEvent.VK_RIGHT:
-                camera = camera.left(0.1);
-                System.out.println(camera.getPosition());
+                camera = camera.right(0.1);
                 break;
             case KeyEvent.VK_E:
-                camera = camera.up(0.1);
+                camera = camera.forward(0.1);
                 break;
             case KeyEvent.VK_D:
-                camera = camera.down(0.1);
+                camera = camera.backward(0.1);
                 break;
+            case KeyEvent.VK_N:
+                cameraMode = 1;
+                break;
+            case KeyEvent.VK_M:
+                cameraMode = 2;
+                break;
+            case KeyEvent.VK_NUMPAD9:
+                //rotace
+                // TODO: pro vsechny telesa, do jine metody
+                cube.setModel(cube.getModel().mul(new Mat4Rot(1, 2, 0, 0)));
+                break;
+        }
+    }
+
+    private void selectSolid(KeyEvent e) {
+        // TODO: add cubics
+        int key = e.getKeyCode();
+        switch (key) {
             case KeyEvent.VK_J:
                 selected = 1;
                 break;
@@ -154,94 +198,39 @@ public class Canvas3D {
             case KeyEvent.VK_L:
                 selected = 3;
                 break;
+        }
+    }
+
+    private void moveSolid(KeyEvent e) {
+        // TODO: add cubics
+        int key = e.getKeyCode();
+        switch (key) {
             case KeyEvent.VK_NUMPAD8:
-                if (selected == 1){
-                    cubeTransl = new Mat4Transl(cubeTransl.get(3, 0), cubeTransl.get(3, 1), cubeTransl.get(3, 2) + 0.1);
-                    cube.setModel(cubeTransl);
-                    renderScene();
-                    panel.repaint();
-                }
-                if (selected == 2){
-                    prismTransl = new Mat4Transl(prismTransl.get(3, 0), prismTransl.get(3, 1), prismTransl.get(3, 2) + 0.1);
-                    prism.setModel(prismTransl);
-                    renderScene();
-                    panel.repaint();
-                }
-                if (selected == 3){
-                    pyramidTransl = new Mat4Transl(pyramidTransl.get(3, 0), pyramidTransl.get(3, 1), pyramidTransl.get(3, 2) + 0.1);
-                    pyramid.setModel(pyramidTransl);
-                    renderScene();
-                    panel.repaint();
-                }
+                moveSelectedSolid(new Mat4Transl(0, 0, 1));
                 break;
             case KeyEvent.VK_NUMPAD2:
-                if (selected == 1){
-                    cubeTransl = new Mat4Transl(cubeTransl.get(3, 0), cubeTransl.get(3, 1), cubeTransl.get(3, 2) - 0.1);
-                    cube.setModel(cubeTransl);
-                    renderScene();
-                    panel.repaint();
-                }
-                if (selected == 2){
-                    prismTransl = new Mat4Transl(prismTransl.get(3, 0), prismTransl.get(3, 1), prismTransl.get(3, 2) - 0.1);
-                    prism.setModel(prismTransl);
-                    renderScene();
-                    panel.repaint();
-                }
-                if (selected == 3){
-                    pyramidTransl = new Mat4Transl(pyramidTransl.get(3, 0), pyramidTransl.get(3, 1), pyramidTransl.get(3, 2) - 0.1);
-                    pyramid.setModel(pyramidTransl);
-                    renderScene();
-                    panel.repaint();
-                }
+                moveSelectedSolid(new Mat4Transl(0, 0, -1));
                 break;
             case KeyEvent.VK_NUMPAD4:
-                if (selected == 1){
-                    cubeTransl = new Mat4Transl(cubeTransl.get(3, 0), cubeTransl.get(3, 1) + 0.1, cubeTransl.get(3, 2));
-                    cube.setModel(cubeTransl);
-                    renderScene();
-                    panel.repaint();
-                }
-                if (selected == 2){
-                    prismTransl = new Mat4Transl(prismTransl.get(3, 0), prismTransl.get(3, 1) + 0.1, prismTransl.get(3, 2));
-                    prism.setModel(prismTransl);
-                    renderScene();
-                    panel.repaint();
-                }
-                if (selected == 3){
-                    pyramidTransl = new Mat4Transl(pyramidTransl.get(3, 0), pyramidTransl.get(3, 1) + 0.1, pyramidTransl.get(3, 2));
-                    pyramid.setModel(pyramidTransl);
-                    renderScene();
-                    panel.repaint();
-                }
+                moveSelectedSolid(new Mat4Transl(0, 1, 0));
                 break;
             case KeyEvent.VK_NUMPAD6:
-                if (selected == 1){
-                    cubeTransl = new Mat4Transl(cubeTransl.get(3, 0), cubeTransl.get(3, 1) - 0.1, cubeTransl.get(3, 2));
-                    cube.setModel(cubeTransl);
-                    renderScene();
-                    panel.repaint();
-                }
-                if (selected == 2){
-                    prismTransl = new Mat4Transl(prismTransl.get(3, 0), prismTransl.get(3, 1) - 0.1, prismTransl.get(3, 2));
-                    prism.setModel(prismTransl);
-                    renderScene();
-                    panel.repaint();
-                }
-                if (selected == 3){
-                    pyramidTransl = new Mat4Transl(pyramidTransl.get(3, 0), pyramidTransl.get(3, 1) - 0.1, pyramidTransl.get(3, 2));
-                    pyramid.setModel(pyramidTransl);
-                    renderScene();
-                    panel.repaint();
-                }
-                break;
-            case KeyEvent.VK_NUMPAD9:
-                    cubeRotate = new Mat4RotXYZ(cubeRotate.get(3,0), cubeRotate.get(3,1), cubeRotate.get(3,2) + 0.1);
-
+                moveSelectedSolid(new Mat4Transl(0, -1, 0));
                 break;
         }
-//        draw();
-        renderScene();
-        panel.repaint();
+    }
+
+    public void moveSelectedSolid(Mat4Transl value){
+        if(selected == 1){
+            cube.setModel(cube.getModel().mul(value));
+        }
+        if(selected == 2){
+            prism.setModel(prism.getModel().mul(value));
+        }
+        if(selected == 3){
+            pyramid.setModel(pyramid.getModel().mul(value));
+        }
+
     }
 
     public void present(Graphics graphics) {
@@ -264,11 +253,6 @@ public class Canvas3D {
 
     }
 
-    public void clear() {
-        img.clear(0x2f2f2f);
-        panel.repaint();
-    }
-
     public void renderScene() {
         draw();
         renderer.setView(camera.getViewMatrix());
@@ -279,9 +263,35 @@ public class Canvas3D {
         renderer.render(pyramid, 0x00ffff);
 
         renderer.render(prism, 0xff0000);
+
+        renderer.render(axes, new int[]{0xff0000, 0x00ff00, 0x0000ff});
+
+        renderer.render(ferguson, 0xff0000);
+        renderer.render(coons, 0x00ff00);
+        renderer.render(bezier, 0x0000ff);
+
+        renderer.render(animatedCube, 0xf0f0f0);
+
         panel.repaint();
     }
 
+    public void startAnimation() {
+        int delay = 100;
+        ActionListener taskPerformer = new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                updateAnimatedCube();
+                renderScene();
+                panel.repaint();
+            }
+        };
+        new Timer(delay, taskPerformer).start();
+    }
+
+    private void updateAnimatedCube() {
+        change += 1;
+        animatedCubeRotate = new Mat4RotXYZ(0, change, 0);
+        animatedCube.setModel(animatedCubeTrans.mul(animatedCubeRotate));
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Canvas3D(800, 600).start());

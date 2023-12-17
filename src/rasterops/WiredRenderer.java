@@ -63,6 +63,48 @@ public class WiredRenderer {
         }
     }
 
+    public void render(Solid solid, int[] color) {
+        //s polem barev pro cubics
+
+        for (int i = 0; i < solid.getIb().size(); i += 2) {
+            int indexA = solid.getIb().get(i);
+            int indexB = solid.getIb().get(i + 1);
+
+            Point3D a = solid.getVb().get(indexA);
+            Point3D b = solid.getVb().get(indexB);
+
+            a = a.mul(solid.getModel()).mul(view).mul(proj);
+            b = b.mul(solid.getModel()).mul(view).mul(proj);
+
+            if (a.getW() < 0 || b.getW() < 0) {
+                break;
+            }
+
+            Vec3D w1 = null;
+            Vec3D w2 = null;
+
+            if (a.dehomog().isPresent()) {
+                w1 = a.dehomog().get();
+            }
+            if (b.dehomog().isPresent()) {
+                w2 = b.dehomog().get();
+            }
+
+            assert w1 != null;
+            Vec3D v1 = new Vec3D(w1);
+            assert w2 != null;
+            Vec3D v2 = new Vec3D(w2);
+
+            v1 = transformToWindow(v1);
+            v2 = transformToWindow(v2);
+
+            liner.drawLine(img,
+                    (int)Math.round(v1.getX()), (int)Math.round(v1.getY()),
+                    (int)Math.round(v2.getX()), (int)Math.round(v2.getY()),
+                    color[i % color.length]);
+        }
+    }
+
     public Vec3D transformToWindow(Vec3D p) {
         return p.mul(new Vec3D(1, -1, 1))
                 .add(new Vec3D(1, 1, 0))
